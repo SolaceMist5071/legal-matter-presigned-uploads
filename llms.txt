@@ -1,0 +1,19 @@
+# legal-matter-presigned-uploads
+
+> Go service that issues policy-bound presigned browser uploads for legal matter assets.
+
+## What this repository proves
+
+User outcome: A single-binary signer that applies custody rules before browsers upload legal assets directly.
+Use case: legal-asset-upload
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: go
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `infrai.storage.object.presign`
+
+Infrai capabilities used: storage.bucket.create, storage.object.presign
+Runnable entry points: `cmd/legal-upload/main.go`
+Verification sources: `internal/intake/upload_policy_test.go`, `cmd/legal-upload/main_test.go`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt

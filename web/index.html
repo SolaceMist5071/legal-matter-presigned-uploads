@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legal asset upload</title>
+<body>
+<main>
+  <h1>Upload a matter asset</h1>
+  <form id="upload">
+    <label>Matter ID <input name="matter_id" value="matter_123" required></label>
+    <label>Asset ID <input name="asset_id" value="asset_001" required></label>
+    <label>Asset kind
+      <select name="kind">
+        <option value="matter_intake">Matter intake PDF</option>
+        <option value="signed_document">Signed document PDF</option>
+        <option value="deadline_followup">Deadline evidence JPEG</option>
+      </select>
+    </label>
+    <input name="file" type="file" required>
+    <button type="submit">Upload</button>
+  </form>
+  <output id="status"></output>
+</main>
+<script>
+const form = document.querySelector("#upload");
+const status = document.querySelector("#status");
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const fields = new FormData(form);
+  const file = fields.get("file");
+  status.textContent = "Signing upload...";
+  const signed = await fetch("/upload-intents", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      matter_id: fields.get("matter_id"), asset_id: fields.get("asset_id"),
+      kind: fields.get("kind"), content_type: file.type
+    })
+  });
+  const intent = await signed.json();
+  if (!signed.ok) throw new Error(intent.error);
+  const uploaded = await fetch(intent.upload_url, {
+    method: intent.method, headers: {"Content-Type": intent.content_type}, body: file
+  });
+  if (!uploaded.ok) throw new Error("upload was not accepted");
+  status.textContent = `Stored as ${intent.key}`;
+});
+</script>
+</body>
+</html>
